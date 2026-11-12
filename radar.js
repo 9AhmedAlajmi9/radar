@@ -1,4 +1,3 @@
-
 (()=>{
 const SY=['BTCUSDT','ETHUSDT','SOLUSDT'],W=[20,25,15,15,15,10];
 let sym=SY[0],C=[],CH=[],H=[],D=[],hT=0,R=null,bad=false,busy=false,VN=70,VO=0;
@@ -8,17 +7,17 @@ en:{sc:'Score',sg:'SIGNAL',wt:'WATCH',no:'No signal yet',bk:'Blocked by volatili
 const t=k=>X[lang][k],sg=x=>x>0?1:x<0?-1:0,avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 const fmt=x=>x.toLocaleString('en-US',{maximumFractionDigits:x>100?2:4});
 
-/* Unified Data Engine */
 const K=async(s,i,n)=>{
- const r=await MarketData.getCandles(s,i,{limit:n});
- return r.candles.map(k=>({
-  t:k.time,
-  o:k.open,
-  h:k.high,
-  l:k.low,
-  c:k.close,
-  v:k.volume
- }));
+ try{
+  if(window.MarketData&&MarketData.getCandles){
+   const r=await MarketData.getCandles(s,i,{limit:n});
+   const a=r.candles.map(k=>({t:k.time>1e12?k.time:k.time*1000,o:+k.open,h:+k.high,l:+k.low,c:+k.close,v:+k.volume}));
+   if(a.length)return a;
+  }
+ }catch(e){}
+ const r=await fetch('https://api.binance.com/api/v3/klines?symbol='+s+'&interval='+i+'&limit='+n);
+ if(!r.ok)throw 0;
+ return (await r.json()).map(k=>({t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]}));
 };
 
 const ema=(a,n)=>{const k=2/(n+1);let e=a[0];return a.map(x=>(e=x*k+e*(1-k)))};
@@ -85,7 +84,7 @@ function ui(){
  $('#lb1').textContent=t('bal');$('#lb2').textContent=t('rk');$('#rnt').textContent=t('nt');
  $('#zo').textContent=t('ol');$('#zn').textContent=t('nw');$('#zl').textContent=t('lv');
  if(bad||!R){$('#rsc').innerHTML='<p class="mu">'+t('er')+'</p>';$('#rsg').style.display='none';return}
- const st=R.blocked?'bk':R.total>=85?'sg':R.total>=70?'wt':'no';R.st=st;
+ const st=R.blocked?'bk':R.total>=75?'sg':R.total>=70?'wt':'no';R.st=st;
  const col=st==='sg'?'var(--gr)':st==='wt'?'var(--cy)':'var(--mu)',dt=R.dir>0?t('b'):t('s');
  $('#rsc').innerHTML='<div class="row"><h3 style="margin:0">'+t('sc')+'</h3><strong class="big" style="color:'+col+'">'+R.total+'/100</strong></div>'+
   R.pts.map((q,i)=>'<div class="rr"><span>'+t('n')[i]+'</span><i><b style="width:'+q/W[i]*100+'%"></b></i><em>'+q.toFixed(0)+'/'+W[i]+'</em></div>').join('')+
