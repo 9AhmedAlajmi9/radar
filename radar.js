@@ -1,12 +1,26 @@
+
 (()=>{
 const SY=['BTCUSDT','ETHUSDT','SOLUSDT'],W=[20,25,15,15,15,10];
 let sym=SY[0],C=[],CH=[],H=[],D=[],hT=0,R=null,bad=false,busy=false,VN=70,VO=0;
 const X={
-ar:{sc:'التقييم',sg:'إشارة',wt:'مراقبة',no:'لا توجد إشارة بعد',bk:'محجوبة بفلتر التذبذب',ent:'الدخول',sl:'الوقف',tp:'الهدف',q:'الكمية',bal:'الرصيد $',rk:'مخاطرة %',ok:'تم النسخ',n:['الأطر D1/H1/M5','ICT/SMC','كلاسيكي','مؤشرات','Wyckoff/VSA','برايس أكشن'],b:'شراء',s:'بيع',er:'تعذر جلب البيانات من Binance',nt:'تحليل تعليمي وليس نصيحة مالية.',ol:'أقدم',nw:'أحدث',lv:'الآن'},
-en:{sc:'Score',sg:'SIGNAL',wt:'WATCH',no:'No signal yet',bk:'Blocked by volatility filter',ent:'Entry',sl:'Stop',tp:'Target',q:'Size',bal:'Balance $',rk:'Risk %',ok:'Copied',n:['MTF D1/H1/M5','ICT/SMC','Classical','Indicators','Wyckoff/VSA','Price action'],b:'BUY',s:'SELL',er:'Could not load Binance data',nt:'Educational analysis, not financial advice.',ol:'Older',nw:'Newer',lv:'Live'}};
+ar:{sc:'التقييم',sg:'إشارة',wt:'مراقبة',no:'لا توجد إشارة بعد',bk:'محجوبة بفلتر التذبذب',ent:'الدخول',sl:'الوقف',tp:'الهدف',q:'الكمية',bal:'الرصيد $',rk:'مخاطرة %',ok:'تم النسخ',n:['الأطر D1/H1/M5','ICT/SMC','كلاسيكي','مؤشرات','Wyckoff/VSA','برايس أكشن'],b:'شراء',s:'بيع',er:'تعذر جلب البيانات',nt:'تحليل تعليمي وليس نصيحة مالية.',ol:'أقدم',nw:'أحدث',lv:'الآن'},
+en:{sc:'Score',sg:'SIGNAL',wt:'WATCH',no:'No signal yet',bk:'Blocked by volatility filter',ent:'Entry',sl:'Stop',tp:'Target',q:'Size',bal:'Balance $',rk:'Risk %',ok:'Copied',n:['MTF D1/H1/M5','ICT/SMC','Classical','Indicators','Wyckoff/VSA','Price action'],b:'BUY',s:'SELL',er:'Could not load market data',nt:'Educational analysis, not financial advice.',ol:'Older',nw:'Newer',lv:'Live'}};
 const t=k=>X[lang][k],sg=x=>x>0?1:x<0?-1:0,avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 const fmt=x=>x.toLocaleString('en-US',{maximumFractionDigits:x>100?2:4});
-const K=(s,i,n)=>fetch('https://api.binance.com/api/v3/klines?symbol='+s+'&interval='+i+'&limit='+n).then(r=>{if(!r.ok)throw 0;return r.json()}).then(a=>a.map(k=>({t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]})));
+
+/* Unified Data Engine */
+const K=async(s,i,n)=>{
+ const r=await MarketData.getCandles(s,i,{limit:n});
+ return r.candles.map(k=>({
+  t:k.time,
+  o:k.open,
+  h:k.high,
+  l:k.low,
+  c:k.close,
+  v:k.volume
+ }));
+};
+
 const ema=(a,n)=>{const k=2/(n+1);let e=a[0];return a.map(x=>(e=x*k+e*(1-k)))};
 const tr=a=>{const c=a.map(x=>x.c),i=c.length-1;return ema(c,20)[i]>ema(c,50)[i]?1:-1};
 const atrS=a=>{const o=[];for(let i=1;i<a.length;i++)o.push(Math.max(a[i].h-a[i].l,Math.abs(a[i].h-a[i-1].c),Math.abs(a[i].l-a[i-1].c)));return o};
