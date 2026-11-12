@@ -1,8 +1,8 @@
 (()=>{
 const T={
-ar:{snd:'تفعيل الصوت',sndOn:'الصوت مفعّل ✓',sndT:'رنين خفيف عند المراقبة (70+) وجرس عند الإشارة (85+). يعمل والتطبيق مفتوح فقط.',lg:'سجل الإشارات',win:'رابحة',los:'خاسرة',op:'مفتوحة',wr:'نسبة الربح',emp:'لا توجد إشارات مسجلة بعد',w:'ربح',l:'خسارة',o:'مفتوحة',
+ar:{snd:'تفعيل الصوت',sndOn:'الصوت مفعّل ✓',sndT:'رنين خفيف عند المراقبة (70+) وجرس عند الإشارة (75+). يعمل والتطبيق مفتوح فقط.',lg:'سجل الإشارات',win:'رابحة',los:'خاسرة',op:'مفتوحة',wr:'نسبة الربح',emp:'لا توجد إشارات مسجلة بعد',w:'ربح',l:'خسارة',o:'مفتوحة',
  acc:{b:'الرصيد',e:'الصافي',f:'عائم',m:'الهامش الحر'},dep:'رصيد وهمي $',set:'ضبط وتصفير',rk:'المخاطرة',sp:'وقف %',tpp:'هدف %',auto:'روبوت الإغلاق التلقائي',buy:'شراء',sell:'بيع',pos:'الصفقات المفتوحة',np:'لا توجد صفقات مفتوحة',cl:'إغلاق',an:'الأداء',tr:'الصفقات',best:'أفضل أصل',mg:'الهامش غير كافٍ',nt:'محاكاة بمال وهمي على الأسعار الحية، برافعة ثابتة 10x.'},
-en:{snd:'Enable sound',sndOn:'Sound on ✓',sndT:'Soft chime on WATCH (70+), bell on SIGNAL (85+). Works only while the app is open.',lg:'Signal log',win:'Wins',los:'Losses',op:'Open',wr:'Win rate',emp:'No signals logged yet',w:'WIN',l:'LOSS',o:'OPEN',
+en:{snd:'Enable sound',sndOn:'Sound on ✓',sndT:'Soft chime on WATCH (70+), bell on SIGNAL (75+). Works only while the app is open.',lg:'Signal log',win:'Wins',los:'Losses',op:'Open',wr:'Win rate',emp:'No signals logged yet',w:'WIN',l:'LOSS',o:'OPEN',
  acc:{b:'Balance',e:'Equity',f:'Floating',m:'Free margin'},dep:'Virtual deposit $',set:'Set & reset',rk:'Risk',sp:'Stop %',tpp:'Target %',auto:'Auto-Close Robot',buy:'BUY',sell:'SELL',pos:'Open positions',np:'No open positions',cl:'Close',an:'Performance',tr:'Trades',best:'Best asset',mg:'Not enough margin',nt:'Paper trading with fake money on live prices, fixed 10x leverage.'}
 };
 const SY=['BTCUSDT','ETHUSDT','SOLUSDT'],fmtP=x=>x>100?x.toFixed(2):x.toFixed(4),pr=s=>px[s]?px[s].p:0;
@@ -34,7 +34,7 @@ function watch(){
  if(!big||!b)return;const s=b.dataset.s,total=parseInt(big.textContent),vis=sg.style.display==='block';
  if(!vis||!h3||h3.textContent.indexOf(s.replace('USDT',''))<0)return;
  const lv=[...sg.querySelectorAll('[data-v]')].map(x=>parseFloat(x.dataset.v)),d=/BUY|شراء/.test(h3.textContent)?1:-1,now=Date.now();
- if(total>=85){if(now-(seen[s]||0)>120000){bell();addSig(s,d,lv,total)}seen[s]=now}
+ if(total>=75){if(now-(seen[s]||0)>120000){bell();addSig(s,d,lv,total)}seen[s]=now}
  else{if(now-(seenW[s]||0)>120000)chime();seenW[s]=now}
 }
 
